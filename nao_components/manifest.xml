@@ -1,0 +1,15 @@
+<package>
+  <description brief="nao_components">
+
+     Additional components for interfacing with the Nao robot. 
+
+  </description>
+  <author>Nick Hawes</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/nao_components</url>
+  <depend package="nao_driver"/>
+
+</package>
+
+
