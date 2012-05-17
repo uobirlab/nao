@@ -31,28 +31,26 @@
 #
 
 import roslib
-roslib.load_manifest('nao_driver')
+roslib.load_manifest('nao_components')
 import rospy
 
 from nao_driver import *
 
+from nao_components.msg import LEDs
 
 class NaoLEDs(NaoNode):
 
+
     def __init__(self): 
 	NaoNode.__init__(self)
+
+        # set up to match constants in LEDs.msg
+        self.ledGroups = ["EarLeds","FaceLeds","BrainLeds","ChestLeds","FeetLeds","AllLeds"]
     
         # ROS initialization:
-        rospy.init_node('nao_LEDs')
-        
-        self.connectNaoQi()
-    
-        # last: ROS subscriptions (after all vars are initialized)
-        #rospy.Subscriber("cmd_pose", Pose2D, self.handleTargetPose, queue_size=1)
-        
-        # ROS services (blocking functions)
-        #self.cmdPoseSrv = rospy.Service("cmd_pose_srv", CmdPoseService, self.handleTargetPoseService)
-    
+        rospy.init_node('nao_LEDs')        
+        self.connectNaoQi()    
+        rospy.Subscriber("leds", LEDs, self.handleLEDState, queue_size=10)        
         rospy.loginfo("nao_LEDs initialized")
     
     def connectNaoQi(self):
@@ -62,27 +60,55 @@ class NaoLEDs(NaoNode):
         self.ledsProxy = self.getProxy("ALLeds")
         if self.ledsProxy is None:
             exit(1)
-                            
-    # def handleCmdVel(self, data):
-    #     rospy.logdebug("Walk cmd_vel: %f %f %f, frequency %f", data.linear.x, data.linear.y, data.angular.z, self.stepFrequency)
-    #     if data.linear.x != 0 or data.linear.y != 0 or data.angular.z != 0:
-    #         self.gotoStartWalkPose()        
-    #     try:        
-    #         eps = 1e-3 # maybe 0,0,0 is a special command in motionProxy...
-    #         if abs(data.linear.x)<eps and abs(data.linear.y)<eps and abs(data.angular.z)<eps:
-    #            self.motionProxy.setWalkTargetVelocity(0,0,0,0.5)
-    #         self.motionProxy.setWalkTargetVelocity(data.linear.x, data.linear.y, data.angular.z, self.stepFrequency)
-    #     except RuntimeError,e:
-    #         # We have to assume there's no NaoQI running anymore => exit!
-    #         rospy.logerr("Exception caught in handleCmdVel:\n%s", e)
-    #         rospy.signal_shutdown("No NaoQI available anymore")
-            
-            
 
-    # def handleCmdVelService(self, req):
-    #     self.handleCmdVel(req.twist)
-    #     return CmdVelServiceResponse()
-        
+        # print(self.ledsProxy.listGroups())
+        # print(self.ledsProxy. getMethodList ())
+         
+    def validRGBValue(self,val):
+        return val >= 0 and val <= 255
+                   
+    def handleLEDState(self, data):
+        #rospy.loginfo("handleLEDState");
+        rospy.loginfo("handleLEDState led: %d, rgb: %d %d %d", data.led, data.red, data.green, data.blue);
+
+        #check for valid values
+        if data.led < 0 or data.led >= len(self.ledGroups):
+            rospy.logwarn("Out of range LED constant (0 - %d), ignoring: %d", (len(self.ledGroups) - 1), data.led)
+            return
+
+        if not self.validRGBValue(data.red):
+            rospy.logwarn("out of range (0 - 255) red value, ignoring: %d", data.red)
+            return
+
+        if not self.validRGBValue(data.green):
+            rospy.logwarn("out of range (0 - 255) green value, ignoring: %d", data.green)
+            return
+
+        if not self.validRGBValue(data.blue):
+            rospy.logwarn("out of range (0 - 255) blue value, ignoring: %d", data.blue)
+            return
+
+        try:                    
+
+            if data.led == data.ledBothEyes or data.led == data.ledChest:
+
+                #  RGB to hex: 0x00RRGGBB.
+                rgb = data.blue
+                rgb = rgb | (data.green << 8)
+                rgb = rgb | (data.red << 16)
+            
+                self.ledsProxy.fadeRGB(self.ledGroups[data.led], rgb, data.duration.to_sec())
+
+            elif data.led == data.ledBothEars or data.led == data.ledHead:
+
+                intensity = data.blue / 255.0
+                
+                self.ledsProxy.fade(self.ledGroups[data.led], intensity, data.duration.to_sec())
+
+        except RuntimeError,e:
+            # We have to assume there's no NaoQI running anymore => exit!
+            rospy.logerr("Exception caught in handleCmdVel:\n%s", e)
+            rospy.signal_shutdown("No NaoQI available anymore")
 
 
 if __name__ == '__main__':

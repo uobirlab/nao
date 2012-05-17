@@ -1,0 +1,17 @@
+<package>
+  <description brief="nao_demo">
+
+    Nao demo components for BARC.
+
+  </description>
+  <author>Nick Hawes</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/nao_demo</url>
+  <depend package="nao_teleop"/>
+  <depend package="nao_components"/>
+  <depend package="joy"/>
+
+</package>
+
+
