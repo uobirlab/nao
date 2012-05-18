@@ -49,8 +49,11 @@ private:
   boost::mt19937 gen;
 
   ros::Publisher m_ledsPub;
-
   nao_components::LEDs m_leds;
+
+  ros::Duration m_behaviorTimeOut;
+  actionlib::SimpleActionClient<nao_components::BehaviorAction> m_behaviorManagerClient;
+  
 
 };
 
@@ -63,9 +66,19 @@ BARCNaoJoy::BARCNaoJoy() : m_modifyLEDsBtn(6),
 			   m_wipeBtn(0),
 			   m_sitDownBtn(1),
 			   m_helloBtn(2),
-			   m_standUpBtn(3) {
+			   m_standUpBtn(3),
+			   m_behaviorTimeOut(20.0),
+			   m_behaviorManagerClient("behavior_action", true) {
+
   subscribeToJoystick(&BARCNaoJoy::joyCallback, this);
   m_ledsPub = nh.advertise<nao_components::LEDs>("leds", 10);
+
+  if (!m_behaviorManagerClient.waitForServer(ros::Duration(3.0))){
+    ROS_WARN_STREAM("Could not connect to \"behavior_action\" action server, "
+		    << "there will be no behaviors available on button presses.\n"
+		    << "Is the behaviour_manager node running?");
+  }
+
 }
 
 void BARCNaoJoy::setRGB(uint8_t _r, uint8_t _g, uint8_t _b, ros::Duration _d) {
@@ -78,8 +91,37 @@ void BARCNaoJoy::setRGB(uint8_t _r, uint8_t _g, uint8_t _b, ros::Duration _d) {
 
 void BARCNaoJoy::handleBehaviorCallback(const Joy::ConstPtr& joy) {
 
-  nao_components::BehaviorGoal goal;
 
+  if(m_behaviorManagerClient.isServerConnected()) {
+    nao_components::BehaviorGoal goal;
+    goal.behavior_name = "";
+    if(buttonTriggered(m_standUpBtn, joy)) {
+      ROS_INFO("stand_up");
+      goal.behavior_name="stand_up";    
+    }
+    else if(buttonTriggered(m_sitDownBtn, joy)) {
+      ROS_INFO("sit_down");
+      goal.behavior_name="sit_down";
+    }
+    else if(buttonTriggered(m_helloBtn, joy)) {
+      ROS_INFO("say_hello");
+      goal.behavior_name="say_hello";
+    }
+    else if(buttonTriggered(m_wipeBtn, joy)) {
+      ROS_INFO("wipe_brow");
+      goal.behavior_name="wipe_brow";
+    }
+    
+    if(goal.behavior_name.length() > 0) {
+      m_behaviorManagerClient.sendGoalAndWait(goal, m_behaviorTimeOut);
+      actionlib::SimpleClientGoalState state = m_behaviorManagerClient.getState();
+      if (state != actionlib::SimpleClientGoalState::SUCCEEDED){
+	ROS_ERROR("Behavior \"%s\" did not succeed (%s): %s", goal.behavior_name.c_str(), state.toString().c_str(), state.text_.c_str());
+      } else{
+	ROS_INFO("Pose action \"%s\" succeeded", goal.behavior_name.c_str());
+      }         
+    }
+  }
 
 }
 
@@ -122,15 +164,13 @@ void BARCNaoJoy::joyCallback(const Joy::ConstPtr& joy) {
   
   initializePreviousJoystick(joy);
 
-  if(m_enabled){ 
-
-    if(buttonPressed(m_modifyLEDsBtn, joy)) {
-      handleLEDCallback(joy);
-    }
-    else if(buttonPressed(m_modifyBehaviorBtn, joy)) {
-      handleBehaviorCallback(joy);
-    }
-
+  if(m_enabled && buttonPressed(m_modifyLEDsBtn, joy)) {
+    handleLEDCallback(joy);
+    // update joystick state
+    setPreviousJoystick(joy);
+  }
+  else if(m_enabled && buttonPressed(m_modifyBehaviorBtn, joy)) {
+    handleBehaviorCallback(joy);
     // update joystick state
     setPreviousJoystick(joy);
   }

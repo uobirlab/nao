@@ -84,11 +84,12 @@ class BehaviorManager(NaoNode):
     def executeBehavior(self, goal):
         rospy.loginfo('Executing behavior: %s',goal.behavior_name)
         
-        if not self.behaviorProxy.isBehaviorRunning(goal.behavior_name):
+        if not self.behaviorProxy.isBehaviorInstalled(goal.behavior_name):
             rospy.logwarn("Behavior \"%s\" is not installed on the robot",goal.behavior_name)
             self.behaviorServer.set_aborted()
         else:
-            #put execution code here
+            # blocking call to run behavior
+            self.behaviorProxy.runBehavior(goal.behavior_name)
             rospy.loginfo('Done')
             self.behaviorServer.set_succeeded()
 

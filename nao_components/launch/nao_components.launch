@@ -18,5 +18,7 @@
   
   <node pkg="nao_components" type="nao_leds.py" name="nao_leds" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
 
+  <node pkg="nao_components" type="behavior_manager.py" name="behaviour_manager" required="true" args="--pip=$(arg nao_ip) --pport=$(arg nao_port)" output="screen"/>
+
 
 </launch>
