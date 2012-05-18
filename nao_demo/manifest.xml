@@ -9,8 +9,14 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/nao_demo</url>
   <depend package="nao_teleop"/>
+  <depend package="nao_driver"/>
+  <depend package="nao_remote"/>
   <depend package="nao_components"/>
+  <depend package="nao_msgs"/>  
   <depend package="joy"/>
+  <depend package="std_srvs"/>
+  <depend package="actionlib"/>
+
 
 </package>
 

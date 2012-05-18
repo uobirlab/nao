@@ -1,4 +1,4 @@
-### some basic poses to load for pose_manager.py from H21 ###
+### some basic poses to load for pose_manager.py for H21 ###
 
 init: # "ready for anything"
   joint_names: ["Body"]
@@ -10,7 +10,6 @@ zero:
   joint_names: ["Body"]
   time_from_start: 1.5
   positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] 
-
 
 crouch:  
   joint_names: ["Body"]

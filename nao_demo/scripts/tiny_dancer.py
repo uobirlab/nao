@@ -101,6 +101,20 @@ class TinyDancer(NaoNode):
             self.motionProxy.post.angleInterpolation(names, angleLists, timeLists, isAbsolute)
 
 
+    def leftArmMove(self, duration, block):
+        #names       = ["LShoulderPitch", "LShoulderRoll", "LElbowYaw", "LElbowRoll"]
+        names       = ["LArm"]
+        # outstretched
+        angleLists  = [1.41, 0.31, -1.38, -1.02]
+        timeLists   = [duration, duration, duration, duration]
+        isAbsolute  = True
+
+        if block:
+            self.motionProxy.angleInterpolation(names, angleLists, timeLists, isAbsolute)
+        else:
+            self.motionProxy.post.angleInterpolation(names, angleLists, timeLists, isAbsolute)
+
+
     def torsoBobDefault(self, duration):
         dy         = 0.07
         dz         = 0.03
@@ -118,15 +132,18 @@ class TinyDancer(NaoNode):
             ROS_ERROR("could not init")
             return
             
-        #for i in range(10):
-         #   self.torsoBob(0,0.04,4)
+
 
 
         # head sweep + bob, head needs work
         duration = 4
-        for i in range(5):
-            self.headBob(0.3,duration/2, True)
-            self.headBob(-0.3,duration/2, True)
+
+        self.leftArmMove(duration,True)
+
+        #for i in range(5):
+        #    self.headBob(0.3,duration/2, True)
+        #    self.headBob(-0.3,duration/2, True)
+        #for i in range(5):
             #self.headSweep(duration, False)
             #self.torsoBob(0.04, 0.05, duration, True)
 
@@ -134,7 +151,6 @@ class TinyDancer(NaoNode):
         # alternating arms
         
         # clap
-        # head bob
         # head sweep improvements
         
 

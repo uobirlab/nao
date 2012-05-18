@@ -39,7 +39,7 @@
 
 import roslib
 
-roslib.load_manifest('nao_driver')
+roslib.load_manifest('nao_demo')
 import rospy
 
  
@@ -53,18 +53,23 @@ class JointReader(NaoNode):
         NaoNode.__init__(self)
     
         # ROS initialization:
-        rospy.init_node('nao_controller')
+        rospy.init_node('joint_reader')
 
         self.pip="192.168.0.6"
 
         self.connectNaoQi()
         
         # get number of available joints, used to distinguish between H21 and H25 later
-        self.availableJoints = len(self.motionProxy.getJointNames("Body"))
+        #self.availableJoints = len(self.motionProxy.getJointNames("Body"))
 
-        print self.motionProxy.getAngles("Body", True)
+        #print self.motionProxy.getAngles("Body", True)
+        print self.motionProxy.getJointNames("LArm")
 
-    
+        print self.motionProxy.getAngles(["LArm"], False)    
+        #print self.motionProxy.getAngles(["LHipPitch","LKneePitch","LAnklePitch"], False)    
+
+
+
     def connectNaoQi(self):
         '''(re-) connect to NaoQI'''
         rospy.loginfo("Connecting to NaoQi at %s:%d", self.pip, self.pport)
@@ -79,7 +84,4 @@ class JointReader(NaoNode):
 if __name__ == '__main__':
 
     controller = JointReader()
-    rospy.loginfo("nao_controller running...")
-    rospy.spin()
-    rospy.loginfo("nao_controller stopped.")
     exit(0)

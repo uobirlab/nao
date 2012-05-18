@@ -9,6 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/nao_components</url>
   <depend package="nao_driver"/>
+  <depend package="actionlib"/>
 
 </package>
 
