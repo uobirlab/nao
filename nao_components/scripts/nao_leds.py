@@ -68,8 +68,7 @@ class NaoLEDs(NaoNode):
         return val >= 0 and val <= 255
                    
     def handleLEDState(self, data):
-        #rospy.loginfo("handleLEDState");
-        rospy.loginfo("handleLEDState led: %d, rgb: %d %d %d", data.led, data.red, data.green, data.blue);
+        #rospy.loginfo("handleLEDState led: %d, rgb: %d %d %d", data.led, data.red, data.green, data.blue);
 
         #check for valid values
         if data.led < 0 or data.led >= len(self.ledGroups):

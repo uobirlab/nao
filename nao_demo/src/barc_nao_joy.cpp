@@ -24,6 +24,8 @@ public:
   void setRGB(nao_components::LEDs & _led, 
 	      uint8_t _r, uint8_t _g, uint8_t _b,  ros::Duration _d = ros::Duration(0,0)) const; 
 
+  void publishAllLEDs();
+    
 protected:
   void joyCallback(const Joy::ConstPtr& joy);
   void setRGB(uint8_t _r, uint8_t _g, uint8_t _b,  ros::Duration _d = ros::Duration(0,0)); 
@@ -32,6 +34,7 @@ protected:
   void handleLEDCallback(const Joy::ConstPtr& joy);
   void handleLEDCallbackRandom(const Joy::ConstPtr& joy);
   void handleBehaviorCallback(const Joy::ConstPtr& joy);
+  void handlePoseCallback(const Joy::ConstPtr& joy);
   
 
 private:
@@ -49,6 +52,11 @@ private:
   int m_helloBtn;
   int m_standUpBtn;
 
+
+  //Button for allowing pose changes
+  int m_modifyPoseBtn;
+  int m_reachBtn;
+  int m_raiseBtn;
 
   //random number generator
   boost::mt19937 gen;
@@ -73,7 +81,7 @@ private:
   nao_components::LEDs m_allLEDs[4];
 
   void defaultLEDs();
-  void publishAllLEDs();
+
 
   // LED state
   enum LEDDisplayState { DEFAULT, EXCITEMENT, CURIOSITY, CONCENTRATION, CONTENT };
@@ -92,6 +100,9 @@ BARCNaoJoy::BARCNaoJoy() : m_modifyLEDsBtn(6),
 			   m_sitDownBtn(1),
 			   m_helloBtn(2),
 			   m_standUpBtn(3),
+			   m_modifyPoseBtn(4),
+			   m_reachBtn(0),
+			   m_raiseBtn(3),
 			   m_behaviorTimeOut(20.0),
 			   m_behaviorManagerClient("behavior_action", true) {
 
@@ -111,7 +122,6 @@ BARCNaoJoy::BARCNaoJoy() : m_modifyLEDsBtn(6),
   m_allLEDs[nao_components::LEDs::ledChest].led = nao_components::LEDs::ledChest;
 
   defaultLEDs();
-  publishAllLEDs();
   m_ledState = DEFAULT;
 }
 
@@ -139,6 +149,34 @@ void BARCNaoJoy::setAllRGB(uint8_t _r, uint8_t _g, uint8_t _b, ros::Duration _d)
   setRGB(m_allLEDs[nao_components::LEDs::ledHead],0,0,0,_d);    
 
 }
+
+void BARCNaoJoy::handlePoseCallback(const Joy::ConstPtr& joy) {
+
+
+  nao_msgs::BodyPoseGoal goal;
+  goal.pose_name = "";
+  
+  
+  if (buttonTriggered(m_reachBtn, joy) && m_bodyPoseClient.isServerConnected()){
+    goal.pose_name = "r_arm_reach";        
+  }
+  else if (buttonTriggered(m_raiseBtn, joy) && m_bodyPoseClient.isServerConnected()){
+    goal.pose_name = "r_arm_raise";        
+  }
+
+  if(goal.pose_name != "") {
+    m_bodyPoseClient.sendGoalAndWait(goal, m_bodyPoseTimeOut);
+    actionlib::SimpleClientGoalState state = m_bodyPoseClient.getState();
+    if (state != actionlib::SimpleClientGoalState::SUCCEEDED){
+      ROS_ERROR("Pose action \"%s\" did not succeed (%s): %s", 
+		goal.pose_name.c_str(), state.toString().c_str(), state.text_.c_str());
+    } else{
+      ROS_INFO("Pose action \"%s\" succeeded", goal.pose_name.c_str());
+    }
+  }
+  
+}
+
 
 void BARCNaoJoy::handleBehaviorCallback(const Joy::ConstPtr& joy) {
 
@@ -284,7 +322,6 @@ void BARCNaoJoy::handleLEDCallback(const Joy::ConstPtr& joy) {
   }
   
 
-  publishAllLEDs();
 
 }
 
@@ -303,6 +340,11 @@ void BARCNaoJoy::joyCallback(const Joy::ConstPtr& joy) {
     // update joystick state
     setPreviousJoystick(joy);
   }
+  else if(m_enabled && buttonPressed(m_modifyPoseBtn, joy)) {
+    handlePoseCallback(joy);
+    // update joystick state
+    setPreviousJoystick(joy);
+  }
   else {
     TeleopNaoJoy::joyCallback(joy);
   }
@@ -318,11 +360,22 @@ int main(int argc, char** argv)
    teleopNao.privateNh.param("motion_publish_rate", publishRate, publishRate);
    ros::Rate pubRate(publishRate);
 
+   //led rate doesn't need to ne that quick
+
+   unsigned int count = 0;
+
    while(teleopNao.nh.ok()){
       ros::spinOnce();
 
       teleopNao.pubMsg();
+
+      if(count++ % 10 == 0) {
+	teleopNao.publishAllLEDs();
+      }
+
       pubRate.sleep();
+
+
    }
 
    return 0;

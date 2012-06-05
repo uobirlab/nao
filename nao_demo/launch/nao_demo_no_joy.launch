@@ -1,0 +1,13 @@
+<launch>
+
+  <!-- remote remapping components -->  
+  <include file="$(find nao_remote)/launch/nao_remote.launch" />
+  
+  <!-- driver components -->  
+  <include file="$(find nao_driver)/launch/nao_driver.launch" />
+  <include file="$(find nao_components)/launch/nao_components.launch" />	
+  
+  <!-- add our own positions for the pose manager -->
+  <rosparam file="$(find nao_demo)/config/bham_poses.yaml" command="load" ns="/pose_manager/poses"/>
+  
+</launch>
