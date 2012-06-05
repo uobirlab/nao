@@ -62,10 +62,12 @@ class JointReader(NaoNode):
         # get number of available joints, used to distinguish between H21 and H25 later
         #self.availableJoints = len(self.motionProxy.getJointNames("Body"))
 
+
         #print self.motionProxy.getAngles("Body", True)
         print self.motionProxy.getJointNames("LArm")
-
-        print self.motionProxy.getAngles(["LArm"], False)    
+        print self.motionProxy.getAngles(["LArm"], True)    
+        print self.motionProxy.getJointNames("RArm")
+        print self.motionProxy.getAngles(["RArm"], True)    
         #print self.motionProxy.getAngles(["LHipPitch","LKneePitch","LAnklePitch"], False)    
 
 

@@ -18,6 +18,5 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 rosbuild_add_boost_directories()
 rosbuild_add_executable(barc_nao_joy src/barc_nao_joy.cpp)
-target_link_libraries(barc_nao_joy teleop_nao_joy)
 rosbuild_link_boost(barc_nao_joy random)
 

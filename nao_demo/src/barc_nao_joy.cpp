@@ -16,16 +16,21 @@
  *
  * Subscribes to "joy" messages, and remaps them to Nao demo commands.
  */
-class BARCNaoJoy : public TeleopNaoJoy
+class BARCNaoJoy : public nao_teleop::TeleopNaoJoy
 {
 public:
   BARCNaoJoy();
 
+  void setRGB(nao_components::LEDs & _led, 
+	      uint8_t _r, uint8_t _g, uint8_t _b,  ros::Duration _d = ros::Duration(0,0)) const; 
+
 protected:
   void joyCallback(const Joy::ConstPtr& joy);
   void setRGB(uint8_t _r, uint8_t _g, uint8_t _b,  ros::Duration _d = ros::Duration(0,0)); 
+  void setAllRGB(uint8_t _r, uint8_t _g, uint8_t _b,  ros::Duration _d = ros::Duration(0,0)); 
 
   void handleLEDCallback(const Joy::ConstPtr& joy);
+  void handleLEDCallbackRandom(const Joy::ConstPtr& joy);
   void handleBehaviorCallback(const Joy::ConstPtr& joy);
   
 
@@ -53,6 +58,26 @@ private:
 
   ros::Duration m_behaviorTimeOut;
   actionlib::SimpleActionClient<nao_components::BehaviorAction> m_behaviorManagerClient;
+
+
+  //storage for message for LEDs
+
+  // Based on the assumption that this remains true
+  // TODO add an assert to check
+  //
+  // enum { ledBothEars = 0 };
+  // enum { ledBothEyes = 1 };
+  // enum { ledHead = 2 };
+  // enum { ledChest = 3 };
+
+  nao_components::LEDs m_allLEDs[4];
+
+  void defaultLEDs();
+  void publishAllLEDs();
+
+  // LED state
+  enum LEDDisplayState { DEFAULT, EXCITEMENT, CURIOSITY, CONCENTRATION, CONTENT };
+  LEDDisplayState m_ledState;
   
 
 };
@@ -79,15 +104,41 @@ BARCNaoJoy::BARCNaoJoy() : m_modifyLEDsBtn(6),
 		    << "Is the behaviour_manager node running?");
   }
 
+  // init led messages
+  m_allLEDs[nao_components::LEDs::ledBothEars].led = nao_components::LEDs::ledBothEars;
+  m_allLEDs[nao_components::LEDs::ledBothEyes].led = nao_components::LEDs::ledBothEyes;
+  m_allLEDs[nao_components::LEDs::ledHead].led = nao_components::LEDs::ledHead;
+  m_allLEDs[nao_components::LEDs::ledChest].led = nao_components::LEDs::ledChest;
+
+  defaultLEDs();
+  publishAllLEDs();
+  m_ledState = DEFAULT;
 }
+
 
 void BARCNaoJoy::setRGB(uint8_t _r, uint8_t _g, uint8_t _b, ros::Duration _d) {
-  m_leds.red = _r;
-  m_leds.green = _g;
-  m_leds.blue = _b;
-  m_leds.duration = _d;
+  setRGB(m_leds,_r,_g,_b,_d);
 }
 
+void BARCNaoJoy::setRGB(nao_components::LEDs & _leds, uint8_t _r, uint8_t _g, uint8_t _b, ros::Duration _d) const {
+  _leds.red = _r;
+  _leds.green = _g;
+  _leds.blue = _b;
+  _leds.duration = _d;
+}
+
+
+void BARCNaoJoy::setAllRGB(uint8_t _r, uint8_t _g, uint8_t _b, ros::Duration _d) {
+
+  // set eyes and chest to RGB
+  setRGB(m_allLEDs[nao_components::LEDs::ledBothEyes],_r,_g,_b,_d);    
+  setRGB(m_allLEDs[nao_components::LEDs::ledChest],_r,_g,_b,_d);    
+
+  //turn off head and ears as they only do blue
+  setRGB(m_allLEDs[nao_components::LEDs::ledBothEars],0,0,0,_d);    
+  setRGB(m_allLEDs[nao_components::LEDs::ledHead],0,0,0,_d);    
+
+}
 
 void BARCNaoJoy::handleBehaviorCallback(const Joy::ConstPtr& joy) {
 
@@ -125,7 +176,7 @@ void BARCNaoJoy::handleBehaviorCallback(const Joy::ConstPtr& joy) {
 
 }
 
-void BARCNaoJoy::handleLEDCallback(const Joy::ConstPtr& joy) {
+void BARCNaoJoy::handleLEDCallbackRandom(const Joy::ConstPtr& joy) {
   
   boost::uniform_int<> dist(0, 255);
   boost::variate_generator<boost::mt19937&, boost::uniform_int<> > rand(gen, dist);
@@ -157,6 +208,84 @@ void BARCNaoJoy::handleLEDCallback(const Joy::ConstPtr& joy) {
     m_ledsPub.publish(m_leds);
   }
   
+}
+
+void BARCNaoJoy::defaultLEDs() {
+
+  // all blue and full brightness
+  for(unsigned int i = 0; i <= nao_components::LEDs::ledChest; i++) {
+    setRGB(m_allLEDs[i],0,0,255);    
+  }
+
+}
+
+
+
+
+void BARCNaoJoy::publishAllLEDs() {
+
+  for(unsigned int i = 0; i <= nao_components::LEDs::ledChest; i++) {
+    m_ledsPub.publish(m_allLEDs[i]);    
+  }
+
+}
+
+void BARCNaoJoy::handleLEDCallback(const Joy::ConstPtr& joy) {
+  
+
+  // 3 on js, excitement - yellow
+  if(buttonTriggered(m_earsBtn, joy)) {
+    if(m_ledState == EXCITEMENT) {
+      m_ledState = DEFAULT;
+    }
+    else {
+      ROS_DEBUG("excitement - yellow");
+      setAllRGB(255,255,0);
+      m_ledState = EXCITEMENT;
+    }
+  }
+  // 1 on js, curiosity - violet
+  else if(buttonTriggered(m_eyesBtn, joy)) {
+    if(m_ledState == CURIOSITY) {
+      m_ledState = DEFAULT;
+    }
+    else {
+      ROS_DEBUG("curiosity - violet");
+      setAllRGB(143,0,255);
+      m_ledState = CURIOSITY;
+    }
+  }
+  // 4 on js, concentration - red
+  else if(buttonTriggered(m_headBtn, joy)) {
+    if(m_ledState == CONCENTRATION) {
+      m_ledState = DEFAULT;
+    }
+    else {
+      ROS_DEBUG("concentration - red");
+      setAllRGB(255,0,0);
+      m_ledState = CONCENTRATION;
+    }
+  }
+  // 2 on js, content - green
+  else if(buttonTriggered(m_chestBtn, joy)) {
+    if(m_ledState == CONTENT) {
+      m_ledState = DEFAULT;
+    }
+    else {
+      ROS_DEBUG("content - green");
+      setAllRGB(0,255,0);    
+      m_ledState = CONTENT;
+    }
+  }  
+ 
+  if(m_ledState == DEFAULT) {
+    defaultLEDs();
+    ROS_DEBUG("default - blue");
+  }
+  
+
+  publishAllLEDs();
+
 }
 
 
