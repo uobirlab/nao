@@ -1,0 +1,27 @@
+<launch>
+  <!-- 
+    start additional Nao components so that they connect to a local NaoQI
+    (e.g. a local simulated one or when running directly on the robot).
+    
+    For a remote connection, change IP and port accordingly in the NAO_IP and NAO_PORT 
+    environment variables.
+  -->
+  
+  <!-- 
+  	This pushes the local PYTHONPATH into the launch file, so that the NaoQI API is found.
+    You need to add the Nao's API dir to your PYTHONPATH so that the modules are found.
+  -->
+  <env name="PYTHONPATH" value="$(env PYTHONPATH)" /> 
+
+  <arg name="nao_ip" default="$(optenv NAO_IP 127.0.0.1)" />
+  <arg name="nao_port" default="$(optenv NAO_PORT 9559)" />
+  
+  <!-- bring up basic drivers -->
+  <include  file="$(find nao_driver)/launch/nao_driver.launch">
+  <!-- bring up behaviour components -->
+  <include  file="$(find nao_remove)/launch/nao_remote.launch">
+  <!-- bring up our custom components -->
+  <include  file="$(find nao_components)/launch/nao_components.launch">
+  
+
+</launch>
