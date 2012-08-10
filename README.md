@@ -72,7 +72,7 @@ The joystick controls currently offered by `barc_nao_joy` on a Logitech Rumble P
 
  + When holding **Button 8** the following buttons run behaviours that have been previously uploaded to the Nao in Choreographe. They are run based on names and are currently configured as follows: **Button 4** "stand_up" (the standard stand-up from any position move), **Button 1** "sit_down" (the standard sit down from any position move), **Button 3** "say_hello" (the wave), and **Button 1** "wipe_brow".
 
-+ With no buttons held, **Button 1** puts the robot into a standing init pose, making it ready for anything. This is another joint interpolation, so it should already be done from a compatible position (e.g another standing pose or crouching, not **not** sitting).
+ + With no buttons held, **Button 1** puts the robot into a standing init pose, making it ready for anything. This is another joint interpolation, so it should already be done from a compatible position (e.g another standing pose or crouching, not **not** sitting).
 
-+ When none of these buttons are held the analogue sticks control the robot's walk. The left stick controls rotation and the right stick controls translation.
+ + When none of these buttons are held the analogue sticks control the robot's walk. The left stick controls rotation and the right stick controls translation.
 
