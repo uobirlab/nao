@@ -22,7 +22,7 @@ public:
   BARCNaoJoy();
 
   void setRGB(nao_components::LEDs & _led, 
-	      uint8_t _r, uint8_pt _g, uint8_t _b,  ros::Duration _d = ros::Duration(0,0)) const; 
+	      uint8_t _r, uint8_t _g, uint8_t _b,  ros::Duration _d = ros::Duration(0,0)) const; 
 
   void publishAllLEDs();
     
@@ -153,28 +153,19 @@ void BARCNaoJoy::setAllRGB(uint8_t _r, uint8_t _g, uint8_t _b, ros::Duration _d)
 void BARCNaoJoy::handlePoseCallback(const Joy::ConstPtr& joy) {
 
 
-  nao_msgs::BodyPoseGoal goal;
-  goal.pose_name = "";
+  std::string pose_name = "";
   
   
   if (buttonTriggered(m_reachBtn, joy) && m_bodyPoseClient.isServerConnected()){
-    goal.pose_name = "r_arm_reach";        
+    pose_name = "r_arm_reach";        
   }
   else if (buttonTriggered(m_raiseBtn, joy) && m_bodyPoseClient.isServerConnected()){
-    goal.pose_name = "r_arm_raise";        
+    pose_name = "r_arm_raise";        
   }
 
-  if(goal.pose_name != "") {
-    m_bodyPoseClient.sendGoalAndWait(goal, m_bodyPoseTimeOut);
-    actionlib::SimpleClientGoalState state = m_bodyPoseClient.getState();
-    if (state != actionlib::SimpleClientGoalState::SUCCEEDED){
-      ROS_ERROR("Pose action \"%s\" did not succeed (%s): %s", 
-		goal.pose_name.c_str(), state.toString().c_str(), state.text_.c_str());
-    } else{
-      ROS_INFO("Pose action \"%s\" succeeded", goal.pose_name.c_str());
-    }
-  }
-  
+  if(pose_name != "") {
+    callBodyPoseClient(pose_name);
+  }  
 }
 
 
