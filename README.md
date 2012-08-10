@@ -58,13 +58,21 @@ Joystick Controls
 
 The joystick controls currently offered by `barc_nao_joy` on a Logitech Rumble Pad are as follows:
 
- + *Button 9* -- Toggle gamepad control on or off. Toggling control on also turns stiffness on. This must be done before the controller can be used to drive the robot. Toggling off does not turn stiffness off (use *Button 10* instead).
+ + **Button 9** -- Toggle gamepad control on or off. Toggling control on also turns stiffness on. This must be done before the controller can be used to drive the robot. Toggling off does not turn stiffness off (use *Button 10* instead).
 
 
- + *Button 10* -- Send the robot into a stable crouch position and turn off joint stiffness. This is a good way to leave the robot in between runs. To turn stiffness back on use *Button 9*.
+ + **Button 10** -- Send the robot into a stable crouch position and turn off joint stiffness. This is a good way to leave the robot in between runs. To turn stiffness back on use **Button 9**.
+
+ + When holding **Button 5** the following buttons put the robot into a predined pose. Joint trajectories are interpolated from the robot's current position, but no collision checking etc. is done (so the robot may crash or fall over if you're not in an appropriate start position). The buttons work as follows: **Button 4** raise one arm up, **Button 1** reach both arms out in front of the robot.
+
+ + When holding **Button 6** the analogue sticks control the position of the robot's head. The left stick controls rotation (pan) and the right stick controls translation (tilt).
+
+ + When holding **Button 7** the following buttons alter the robot's LEDs: **Button 4** red, **Button 1** violet, **Button 3** yellow, and **Button 1** green.
 
 
- + When holding *Button 8* the following buttons run behaviours that have been previously uploaded to the Nao in Choreographe. They are run based on names and are currently configured as follows: *Button 4* "stand_up" (the standard stand-up from any position move), *Button 1* "sit_down" (the standard sit down from any position move), *Button 3* "say_hello" (the wave), and *Button 1* "wipe_brow".
+ + When holding **Button 8** the following buttons run behaviours that have been previously uploaded to the Nao in Choreographe. They are run based on names and are currently configured as follows: **Button 4** "stand_up" (the standard stand-up from any position move), **Button 1** "sit_down" (the standard sit down from any position move), **Button 3** "say_hello" (the wave), and **Button 1** "wipe_brow".
 
++ With no buttons held, **Button 1** puts the robot into a standing init pose, making it ready for anything. This is another joint interpolation, so it should already be done from a compatible position (e.g another standing pose or crouching, not **not** sitting).
 
++ When none of these buttons are held the analogue sticks control the robot's walk. The left stick controls rotation and the right stick controls translation.
 
