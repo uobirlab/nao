@@ -21,9 +21,6 @@ export PYTHONPATH=$PYTHONPATH:$NAOQI_LIBS
 export NAOQI_LIBRARY_PATH=$NAOQI_LIBS:$LD_LIBRARY_PATH
 
 ```
-
-
-
 Networking
 ----------
 
@@ -34,5 +31,40 @@ To ensure the ROS components can find the Nao, set the environment variable NAO_
 ```bash
 export NAO_IP=192.168.0.6
 ```
+Launching
+---------
+
+To launch the components that provide access to Nao functionality, run the following command
+
+```bash
+ LD_LIBRARY_PATH=$NAOQI_LIBRARY_PATH roslaunch nao_components nao.launch
+```
+The override of the LD_LIBRARY_PATH is currently necessary for NAOqi. **Do not** set this in your .bashrc as it contains libraries that could screw up your general settings.
+
+To launch the teleoperation demo, edit `nao_demo/launch/nao_teleop_demo.launch` to set your joystick device correctly, then run
+
+```
+roslaunch nao_demo nao_teleop_demo.launch
+```
+
+Visualisation
+-------------
+
+You can view the robot in rviz by adding a "Robot Model".
+
+
+Joystick Controls
+-----------------
+
+The joystick controls currently offered by `barc_nao_joy` on a Logitech Rumble Pad are as follows:
+
+ + *Button 9* -- Toggle gamepad control on or off. Toggling control on also turns stiffness on. This must be done before the controller can be used to drive the robot. Toggling off does not turn stiffness off (use *Button 10* instead).
+
+
+ + *Button 10* -- Send the robot into a stable crouch position and turn off joint stiffness. This is a good way to leave the robot in between runs. To turn stiffness back on use *Button 9*.
+
+
+ + When holding *Button 8* the following buttons run behaviours that have been previously uploaded to the Nao in Choreographe. They are run based on names and are currently configured as follows: *Button 4* "stand_up" (the standard stand-up from any position move), *Button 1* "sit_down" (the standard sit down from any position move), *Button 3* "say_hello" (the wave), and *Button 1* "wipe_brow".
+
 
 
