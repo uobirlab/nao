@@ -1,0 +1,11 @@
+### some demo poses to load for pose_manager.py for H21 ###
+
+r_arm_raise:  
+  joint_names: ["RArm"]
+  time_from_start: 3
+  positions: [-1.50, -0.17, -0.04, 0.46]
+
+r_arm_reach:  
+  joint_names: ["RArm"]
+  time_from_start: 3
+  positions: [-0.03, -0.12, 1.37, 0.05]

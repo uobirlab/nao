@@ -22,6 +22,9 @@
   <include  file="$(find nao_remote)/launch/nao_remote.launch"/>
   <!-- bring up our custom components -->
   <include  file="$(find nao_components)/launch/nao_components.launch"/>
+
+  <!-- add our own positions for the pose manager -->
+  <rosparam file="$(find nao_components)/config/bham_poses.yaml" command="load" ns="/pose_manager/poses"/>
   
 
 </launch>

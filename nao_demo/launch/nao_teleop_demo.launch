@@ -8,6 +8,6 @@
   <node pkg="nao_demo" type="barc_nao_joy" name="barc_nao_joy" required="true" output="screen"/> 
   
   <!-- add our own positions for the pose manager -->
-  <rosparam file="$(find nao_demo)/config/bham_poses.yaml" command="load" ns="/pose_manager/poses"/>
+  <rosparam file="$(find nao_demo)/config/demo_poses.yaml" command="load" ns="/pose_manager/poses"/>
   
 </launch>

@@ -22,7 +22,7 @@ public:
   BARCNaoJoy();
 
   void setRGB(nao_components::LEDs & _led, 
-	      uint8_t _r, uint8_t _g, uint8_t _b,  ros::Duration _d = ros::Duration(0,0)) const; 
+	      uint8_t _r, uint8_pt _g, uint8_t _b,  ros::Duration _d = ros::Duration(0,0)) const; 
 
   void publishAllLEDs();
     
@@ -192,7 +192,8 @@ void BARCNaoJoy::handleBehaviorCallback(const Joy::ConstPtr& joy) {
       ROS_INFO("sit_down");
       goal.behavior_name="sit_down";
     }
-    else if(buttonTriggered(m_helloBtn, joy)) {
+    else if(buttonTriggered(m_helloBtn
+      , joy)) {
       ROS_INFO("say_hello");
       goal.behavior_name="say_hello";
     }
