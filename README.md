@@ -50,8 +50,32 @@ roslaunch nao_demo nao_teleop_demo.launch
 Visualisation
 -------------
 
-You can view the robot in rviz by adding a "Robot Model".
+See http://www.ros.org/wiki/nao/Tutorials/Getting-Started from which the following steps are taken.
 
+First you need to launch the nao_state_publisher node and get it to load the URDF model of the Nao robot
+
+```
+roslaunch nao_description nao_state_publisher.launch
+```
+
+Then start rviz
+
+```
+rosrun rviz rviz
+```
+
+In the "Displays" window, change "Fixed frame" to "/base_link"
+
+The "Target Frame" should be "&lt;Fixed Frame&gt;"
+
+Global Status should change to "OK". 
+If it's red and "error" then that probably means that the topic /joint_states is not being updated.
+
+Click on the "Add" button and add a grid
+
+Click on the "Add" button and add a RobotModel 
+
+If everything is okay, you will see a robot model made of cylinders.
 
 Joystick Controls
 -----------------
@@ -70,7 +94,7 @@ The joystick controls currently offered by `barc_nao_joy` on a Logitech Rumble P
  + When holding **Button 7** the following buttons alter the robot's LEDs: **Button 4** red, **Button 1** violet, **Button 3** yellow, and **Button 1** green.
 
 
- + When holding **Button 8** the following buttons run behaviours that have been previously uploaded to the Nao in Choreographe. They are run based on names and are currently configured as follows: **Button 4** "stand_up" (the standard stand-up from any position move), **Button 1** "sit_down" (the standard sit down from any position move), **Button 3** "say_hello" (the wave), and **Button 1** "wipe_brow".
+ + When holding **Button 8** the following buttons run behaviours that have been previously uploaded to the Nao in Choreographe. They are run based on names and are currently configured as follows: **Button 4** "stand_up" (the standard stand-up from any position move), **Button 2** "sit_down" (the standard sit down from any position move), **Button 3** "say_hello" (the wave), and **Button 1** "wipe_brow".
 
  + With no buttons held, **Button 1** puts the robot into a standing init pose, making it ready for anything. This is another joint interpolation, so it should already be done from a compatible position (e.g another standing pose or crouching, not **not** sitting).
 
