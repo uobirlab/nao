@@ -8,6 +8,9 @@ Install
 
 To install the ROS parts, make sure the directory containing this stack is in your ROS_PACKAGE_PATH then do `rosmake nao_demo`. 
 
+If you encounter this error: rosboost_cfg.rosboost_cfg.BoostError: "Could not locate library [random], version (1, 46, 1, '/usr', '/usr/include', True, True) in lib directory [/usr/lib]" then you install "libboost-random-dev" using synaptic package manager.
+
+
 To run the components, you also need the NAOqi SDK installed on the same machine. Download the appropriate verison of the "NAOqi C++ SDK" from the [Aldebaran Robotics user area](http://users.aldebaran-robotics.com/index.php?option=com_content&view=article&id=5&Itemid=17) (ask Nick for the login details), then extract it somewhere on your machine (I usually place it under `/opt/naoqi`). To ensure that the ROS components can find the NAOqi SDK, you need to add the lib directory to your PYTHONPATH, and also define the NAOQI_LIBRARY_PATH variable which we'll use later when running components e.g.
 
 ```bash
