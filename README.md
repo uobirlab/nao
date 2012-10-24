@@ -85,6 +85,7 @@ Joystick Controls
 
 The joystick controls currently offered by `barc_nao_joy` on a Logitech Rumble Pad are as follows:
 
+Warning: Make sure the robot is not sitting down before telling it to stand up.
  + **Button 9** -- Toggle gamepad control on or off. Toggling control on also turns stiffness on. This must be done before the controller can be used to drive the robot. Toggling off does not turn stiffness off (use *Button 10* instead).
 
 
