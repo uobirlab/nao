@@ -95,7 +95,7 @@ Warning: Make sure the robot is not sitting down before telling it to stand up.
 
  + When holding **Button 6** the analogue sticks control the position of the robot's head. The left stick controls rotation (pan) and the right stick controls translation (tilt).
 
- + When holding **Button 7** the following buttons alter the robot's LEDs: **Button 4** red, **Button 1** violet, **Button 3** yellow, and **Button 1** green.
+ + When holding **Button 7** the following buttons alter the robot's LEDs: **Button 4** red, **Button 1** violet, **Button 3** yellow, and **Button 2** green.
 
 
  + When holding **Button 8** the following buttons run behaviours that have been previously uploaded to the Nao in Choreographe. They are run based on names and are currently configured as follows: **Button 4** "stand_up" (the standard stand-up from any position move), **Button 2** "sit_down" (the standard sit down from any position move), **Button 3** "say_hello" (the wave), and **Button 1** "wipe_brow".
