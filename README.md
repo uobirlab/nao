@@ -6,10 +6,6 @@ Running the Nao using this stack assumes you have a machine running ROS on the s
 Install
 -------
 
-To install the ROS parts, make sure the directory containing this stack is in your ROS_PACKAGE_PATH then do `rosmake nao_demo`. 
-
-If you encounter this error: rosboost_cfg.rosboost_cfg.BoostError: "Could not locate library [random], version (1, 46, 1, '/usr', '/usr/include', True, True) in lib directory [/usr/lib]" then you need to install "libboost-random-dev" using synaptic package manager.
-
 
 To run the components, you also need the NAOqi SDK installed on the same machine. Download the appropriate verison of the "NAOqi C++ SDK" from the [Aldebaran Robotics user area](http://users.aldebaran-robotics.com/index.php?option=com_content&view=article&id=5&Itemid=17) (ask Nick for the login details), then extract it somewhere on your machine (I usually place it under `/opt/naoqi`). To ensure that the ROS components can find the NAOqi SDK, you need to add the lib directory to your PYTHONPATH, and also define the NAOQI_LIBRARY_PATH variable which we'll use later when running components e.g.
 
@@ -24,6 +20,27 @@ export PYTHONPATH=$PYTHONPATH:$NAOQI_LIBS
 export NAOQI_LIBRARY_PATH=$NAOQI_LIBS:$LD_LIBRARY_PATH
 
 ```
+
+To install the ROS parts, make sure the directory containing this stack is in your ROS_PACKAGE_PATH then do `rosmake nao_demo`. To do this from scratch using a ROS workspace, including dependencies, do
+
+'''bash
+
+sudo apt-get install ros-groovy-joy libboost-random-dev
+
+mkdir ~/ros_ws
+rosws init ~/ros_ws /opt/ros/groovy
+cd ~/ros_ws
+source setup.bash
+rosws set humanoid_stacks --svn https://alufr-ros-pkg.googlecode.com/svn/trunk/humanoid_stacks
+rosws set nao --git https://github.com/barcuk/nao.git
+source setup.bash
+rosdep install nao_demo
+rosmake nao_demo
+'''
+
+If you encounter this error: rosboost_cfg.rosboost_cfg.BoostError: "Could not locate library [random], version (1, 46, 1, '/usr', '/usr/include', True, True) in lib directory [/usr/lib]" then you need to install "libboost-random-dev" using synaptic package manager.
+
+
 Networking
 ----------
 
@@ -104,15 +121,4 @@ Warning: Make sure the robot is not sitting down before telling it to stand up.
 
  + When none of these buttons are held the analogue sticks control the robot's walk. The left stick controls rotation and the right stick controls translation.
 
-
-Source Install
------------------
-
-sudo apt-get install ros-groovy-joy libboost-random-dev
-
-rosws init ~/ros_ws /opt/ros/groovy
-rosws set humanoid_stacks --svn https://alufr-ros-pkg.googlecode.com/svn/trunk/humanoid_stacks
-rosws set nao --git https://github.com/barcuk/nao.git
-rosdep install nao_demo
-rosmake nao_demo
 
