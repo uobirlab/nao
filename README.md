@@ -104,3 +104,15 @@ Warning: Make sure the robot is not sitting down before telling it to stand up.
 
  + When none of these buttons are held the analogue sticks control the robot's walk. The left stick controls rotation and the right stick controls translation.
 
+
+Source Install
+-----------------
+
+sudo apt-get install ros-groovy-joy libboost-random-dev
+
+rosws init ~/ros_ws /opt/ros/groovy
+rosws set humanoid_stacks --svn https://alufr-ros-pkg.googlecode.com/svn/trunk/humanoid_stacks
+rosws set nao --git https://github.com/barcuk/nao.git
+rosdep install nao_demo
+rosmake nao_demo
+
