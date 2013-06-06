@@ -23,7 +23,7 @@ export NAOQI_LIBRARY_PATH=$NAOQI_LIBS:$LD_LIBRARY_PATH
 
 To install the ROS parts, make sure the directory containing this stack is in your ROS_PACKAGE_PATH then do `rosmake nao_demo`. To do this from scratch using a ROS workspace, including dependencies, do
 
-'''bash
+```bash
 
 sudo apt-get install ros-groovy-joy libboost-random-dev
 
@@ -36,7 +36,7 @@ rosws set nao --git https://github.com/barcuk/nao.git
 source setup.bash
 rosdep install nao_demo
 rosmake nao_demo
-'''
+```
 
 If you encounter this error: rosboost_cfg.rosboost_cfg.BoostError: "Could not locate library [random], version (1, 46, 1, '/usr', '/usr/include', True, True) in lib directory [/usr/lib]" then you need to install "libboost-random-dev" using synaptic package manager.
 
