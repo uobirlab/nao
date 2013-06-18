@@ -33,6 +33,7 @@ cd ~/ros_ws
 source setup.bash
 rosws set humanoid_stacks --svn https://alufr-ros-pkg.googlecode.com/svn/trunk/humanoid_stacks
 rosws set nao --git https://github.com/barcuk/nao.git
+rosws update
 source setup.bash
 rosdep install nao_demo
 rosmake nao_demo
